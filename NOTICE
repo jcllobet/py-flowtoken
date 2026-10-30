@@ -1,0 +1,12 @@
+py-flowtoken is an adaptation of FlowToken by Ephibbs and contributors.
+Upstream: https://github.com/Ephibbs/flowtoken
+Reference package: flowtoken@1.0.40, published with ISC license metadata.
+
+The named animation effects and their keyframe definitions are adapted from
+FlowToken. Python rendering, framework adapters, streaming state, and the
+browser renderer are implemented in this repository.
+
+The upstream README labels its license MIT; its published package labels it
+ISC. Both notices are recorded here rather than presenting this project as
+an official upstream release. The ISC terms for this distribution are in
+LICENSE. No upstream React runtime is included in the distribution.
