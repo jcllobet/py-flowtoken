@@ -7,7 +7,7 @@ Python renders the components and maintains stream state. A small, dependency-fr
 ## Install
 
 ```sh
-pip install 'git+https://github.com/jcllobet/py-flowtoken.git@v0.1.0'
+pip install 'git+https://github.com/jcllobet/py-flowtoken.git@v0.1.1'
 ```
 
 This project is published as a GitHub repository; it is not currently published on PyPI.

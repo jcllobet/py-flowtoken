@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "py-flowtoken"
-version = "0.1.0"
+version = "0.1.1"
 description = "A Python adaptation of FlowToken for animated text and Markdown streaming without React"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -13,7 +13,7 @@ authors = [{name = "py-flowtoken contributors"}]
 dependencies = ["markdown-it-py>=3,<4", "mdit-py-plugins>=0.4,<0.5", "linkify-it-py>=2,<3"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8,<9", "build>=1.2,<2"]
+dev = ["pytest>=8,<9", "build>=1.2,<2", "hatchling>=1.27,<2"]
 fasthtml = ["python-fasthtml>=0.14.17"]
 
 [project.urls]
