@@ -1,0 +1,32 @@
+name: Test Python port and upstream parity
+on: [push, pull_request]
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.10', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '${{ matrix.python }}'
+      - run: pip install '.[dev]'
+      - run: pytest -q
+      - run: python -m build --no-isolation
+  browser:
+    runs-on: ubuntu-latest
+    env:
+      PYTHON: python
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install '.[dev]'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --ignore-scripts
+      - run: npx playwright install --with-deps chromium
+      - run: npm test

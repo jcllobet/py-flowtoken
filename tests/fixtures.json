@@ -1,0 +1,5 @@
+{
+  "text": ["Hello world", "A  B\nC\tD", "café 日本語", "First sentence. Second sentence.", ""],
+  "snapshots": ["Hello", "Hello world", "Hello world", "Hello world!", "Changed", "C", ""],
+  "markdown": ["# Heading\n\nA **bold** word and *emphasis*.", "- one\n- two\n\n1. first\n2. second", "[Link](https://example.com) and `code`.", "| A | B |\n|---|---|\n| C | D |", "- [x] done\n- [ ] next", "~~gone~~", "```python\nprint('hello')\n```", "![alt](https://example.com/image.png)"]
+}

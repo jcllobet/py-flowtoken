@@ -1,0 +1,16 @@
+{
+  "name": "py-flowtoken-parity-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:oracle": "esbuild tests/oracle.js --bundle --format=esm --platform=browser --minify --outfile=.local/oracle.js",
+    "test": "npm run build:oracle && node tests/browser.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1",
+    "esbuild": "0.25.5",
+    "flowtoken": "1.0.40",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  }
+}
