@@ -5,7 +5,7 @@ Requires Python 3.10 or newer.
 ## Install in an existing project
 
 ```sh
-python -m pip install 'py-flowtoken[fasthtml] @ git+https://github.com/jcllobet/py-flowtoken.git@v0.3.0'
+python -m pip install 'py-flowtoken[fasthtml]'
 ```
 
 ## Add the assets and components

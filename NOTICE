@@ -1,12 +1,11 @@
-py-flowtoken is an adaptation of FlowToken by Ephibbs and contributors.
-Upstream: https://github.com/Ephibbs/flowtoken
-Reference package: flowtoken@1.0.40, published with ISC license metadata.
+py-flowtoken is an independent Python adaptation of FlowToken by Ephibbs
+and contributors: https://github.com/Ephibbs/flowtoken
 
 The named animation effects and their keyframe definitions are adapted from
-FlowToken. Python rendering, framework adapters, streaming state, and the
-browser renderer are implemented in this repository.
+FlowToken. The README demonstration GIF comes from the original FlowToken
+README: https://nextjs-omega-five-46.vercel.app/demo.gif
 
-The upstream README labels its license MIT; its published package labels it
-ISC. Both notices are recorded here rather than presenting this project as
-an official upstream release. The ISC terms for this distribution are in
-LICENSE. No upstream React runtime is included in the distribution.
+Python rendering, framework adapters, streaming state, and the browser
+renderer are implemented in this repository. No upstream React runtime is
+included in the distribution. py-flowtoken is released under the MIT License
+in LICENSE.

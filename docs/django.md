@@ -5,7 +5,7 @@ Requires Python 3.10 or newer and Django 5.2 LTS. The `django` extra installs Dj
 ## Install in an existing project
 
 ```sh
-python -m pip install 'py-flowtoken[django] @ git+https://github.com/jcllobet/py-flowtoken.git@v0.3.0'
+python -m pip install 'py-flowtoken[django]'
 ```
 
 ## Enable the template tags and static assets
