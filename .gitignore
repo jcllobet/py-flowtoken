@@ -9,3 +9,5 @@ dist/
 .env
 .env.*
 .DS_Store
+
+.sesskey
