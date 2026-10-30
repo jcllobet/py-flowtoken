@@ -17,6 +17,9 @@ jobs:
       - run: pip install '.[dev,fasthtml,flask,django]'
       - run: pytest -q
       - run: python -m build --no-isolation
+      - run: pip install --force-reinstall --no-deps dist/*.whl
+      - run: python -c "from py_flowtoken import AnimatedMarkdown, asset_path; assert 'data-ft-copy' in AnimatedMarkdown('    hello').render(); assert asset_path('flowtoken.js').is_file()"
+        working-directory: /tmp
   browser:
     runs-on: ubuntu-latest
     env:
@@ -33,3 +36,4 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npx playwright install --with-deps chromium
       - run: npm test
+      - run: git diff --exit-code -- src/py_flowtoken/static/py_flowtoken/flowtoken.js
