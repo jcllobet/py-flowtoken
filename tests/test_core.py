@@ -78,7 +78,7 @@ def test_all_animation_names_and_assets():
     assert len(ANIMATIONS) == 14
     for name, keyframe in ANIMATIONS.items():
         assert "@keyframes " + keyframe in css
-        assert keyframe in AnimatedText("hello", animation=name).render()
+        assert f'data-animation="{name}"' in AnimatedText("hello", animation=name).render()
     assert "flowtoken.js" in assets()
     assert "flowtoken.css" in assets()
     with pytest.raises(ValueError):
@@ -94,6 +94,8 @@ def test_all_animation_names_and_assets():
         {"animation_timing_function": "unsafe"},
         {"interval_ms": -1},
         {"interval_ms": 1001},
+        {"animation_timing_function": "steps(1, jump-none)"},
+        {"animate_initial": "false"},
     ],
 )
 def test_bad_options_are_rejected(options):
@@ -137,3 +139,73 @@ def test_image_safety_and_escaping():
         AnimatedImage("javascript:alert(1)")
     with pytest.raises(ValueError):
         AnimatedImage("/image.png", height="1px;display:none")
+
+
+def test_semantic_rendering_and_safe_urls():
+    rendered = AnimatedText('one\ntwo').render()
+    assert 'ft-token' not in rendered
+    assert text_of(rendered) == 'one\ntwo'
+    for source in ['[broken](http://[)', '[bad](http://example.com:bad)', '![alt](http://[)']:
+        rendered = AnimatedMarkdown(source).render()
+        assert 'href="http:' not in rendered
+        assert 'src="http:' not in rendered
+
+
+def test_append_has_a_delta_fast_path():
+    stream = TextStream()
+    chunks = stream.chunks
+    stream.update = lambda value: (_ for _ in ()).throw(AssertionError('append used full snapshot path'))
+    for value in ['a', ' ', 'b']:
+        stream.append(value)
+    assert stream.chunks is chunks
+    assert stream.text == 'a b'
+    assert stream.tokens() == ['a', ' ', 'b']
+
+
+def test_custom_components_and_partial_tags():
+    import html
+    from py_flowtoken import Component
+    seen = []
+    def badge(component: Component):
+        seen.append(component)
+        return '<mark data-ft-key="badge">'+html.escape(component.content)+'</mark>'
+    for value in ['before <', 'before <bad', 'before <badge title="x"', 'before <badge\ntitle="x"', 'before <badge>unfinished']:
+        rendered = AnimatedMarkdown(value, custom_components={'badge':badge}).render()
+        assert 'unfinished' not in rendered
+        assert '<bad' not in text_of(rendered)
+    rendered = AnimatedMarkdown('before <badge title="name">Hello</badge> after', custom_components={'badge':badge}).render()
+    assert '<mark data-ft-key="badge">Hello</mark>' in rendered
+    assert seen[-1].attributes['title'] == 'name'
+    assert 'before' in text_of(rendered) and 'after' in text_of(rendered)
+    default = AnimatedMarkdown('<mark>literal</mark>').render()
+    assert '&lt;mark&gt;' in default
+    trusted = AnimatedMarkdown('<mark onclick="evil()">safe</mark><script>evil()</script>', trusted_html=True).render()
+    assert '<mark>safe</mark>' in trusted
+    assert 'onclick' not in trusted and '<script>' not in trusted
+
+
+def test_code_and_image_options():
+    code = AnimatedMarkdown('```python\nvalue = 42\n```', code_style='monokai').render()
+    assert 'data-ft-copy' in code and 'data-ft-source="value = 42\n"' in code
+    assert 'color:' in code and 'data-ft-theme="monokai"' in code
+    image = AnimatedMarkdown('![alt](/image.png)', img_height='7rem', img_width='50%', object_fit='cover').render()
+    assert 'height:7rem' in image and 'width:50%' in image and 'object-fit:cover' in image
+    assert 'data-ft-image' in image
+    assert 'cubic-bezier' in AnimatedText('hello',animation_timing_function='cubic-bezier(0.2,0,0.4,1)').render()
+    assert 'steps(4, end)' in AnimatedText('hello',animation_timing_function='steps(4, end)').render()
+
+
+def test_custom_components_preserve_markdown_code():
+    calls = []
+    def badge(component):
+        calls.append(component)
+        return '<mark>rendered</mark>'
+    for source in ['`<badge>literal</badge>`', '```html\n<badge>literal</badge>\n```', '    <badge>literal</badge>\n', '`<bad`']:
+        output = AnimatedMarkdown(source, custom_components={'badge':badge}).render()
+        assert '<mark>' not in output
+        assert '<bad' in text_of(output)
+    assert not calls
+    output = AnimatedMarkdown('`example` <badge>real</badge>', custom_components={'badge':badge}).render()
+    assert '<mark>rendered</mark>' in output
+    with pytest.raises(TypeError, match='HTML strings'):
+        AnimatedMarkdown('<badge/>', custom_components={'badge':lambda component:None}).render()

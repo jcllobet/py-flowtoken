@@ -5,7 +5,7 @@ Requires Python 3.10 or newer and Flask 3.1. The `flask` extra installs Flask, w
 ## Install in an existing project
 
 ```sh
-python -m pip install 'py-flowtoken[flask] @ git+https://github.com/jcllobet/py-flowtoken.git@v0.2.0'
+python -m pip install 'py-flowtoken[flask] @ git+https://github.com/jcllobet/py-flowtoken.git@v0.3.0'
 ```
 
 ## Register the adapter

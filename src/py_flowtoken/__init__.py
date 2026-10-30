@@ -1,3 +1,4 @@
+from .components import Component
 from .core import (
     ANIMATIONS,
     AnimatedImage,
@@ -12,6 +13,7 @@ from .core import (
 )
 
 __all__ = [
+    "Component",
     "ANIMATIONS",
     "AnimatedImage",
     "AnimatedMarkdown",
@@ -23,4 +25,4 @@ __all__ = [
     "assets",
     "tokenize",
 ]
-__version__ = "0.2.0"
+__version__ = "0.3.0"

@@ -45,20 +45,27 @@ class TextStream:
             self.chunks = [self.text]
 
     def update(self, text: str) -> Update:
-        reset = not text.startswith(self.text)
-        delta = text if reset else text[len(self.text) :]
-        if text != self.text:
-            self.revision += 1
-            self.chunks = (
-                ([text] if text else [])
-                if reset
-                else self.chunks + ([delta] if delta else [])
-            )
-            self.text = text
-        return Update(self.text, delta, reset, self.revision)
+        if not isinstance(text, str):
+            raise TypeError('Expected text')
+        if text == self.text:
+            return Update(self.text, '', False, self.revision)
+        if text.startswith(self.text):
+            return self.append(text[len(self.text):])
+        self.text = text
+        self.chunks.clear()
+        if text:
+            self.chunks.append(text)
+        self.revision += 1
+        return Update(text, text, True, self.revision)
 
     def append(self, delta: str) -> Update:
-        return self.update(self.text + delta)
+        if not isinstance(delta, str):
+            raise TypeError('Expected text delta')
+        if delta:
+            self.text += delta
+            self.chunks.append(delta)
+            self.revision += 1
+        return Update(self.text, delta, False, self.revision)
 
     def tokens(self, sep: str = "diff") -> list[str]:
         return self.chunks.copy() if sep == "diff" else tokenize(self.text, sep)

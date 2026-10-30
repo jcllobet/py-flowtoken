@@ -4,9 +4,10 @@
   "type": "module",
   "scripts": {
     "build:oracle": "esbuild tests/oracle.js --bundle --format=esm --platform=browser --minify --outfile=.local/oracle.js",
-    "test": "npm run test:parity && npm run test:frameworks",
+    "test": "npm run build:runtime && npm run test:parity && npm run test:frameworks",
     "test:parity": "npm run build:oracle && node tests/browser.mjs",
-    "test:frameworks": "node tests/frameworks.mjs"
+    "test:frameworks": "node tests/frameworks.mjs",
+    "build:runtime": "esbuild browser/index.js --bundle --format=esm --platform=browser --minify --legal-comments=eof --outfile=src/py_flowtoken/static/py_flowtoken/flowtoken.js"
   },
   "devDependencies": {
     "@playwright/test": "1.56.1",
