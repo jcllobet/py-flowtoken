@@ -2,15 +2,19 @@
 
 A Python adaptation of [Ephibbs/flowtoken](https://github.com/Ephibbs/flowtoken) for animated text and Markdown streaming. It works with FastHTML, Flask, and Django, without React or a JavaScript package manager in production.
 
+![Original FlowToken animation demo](https://nextjs-omega-five-46.vercel.app/demo.gif)
+
+Animation from the [original FlowToken README](https://github.com/Ephibbs/flowtoken#readme), by Ephibbs and contributors. It demonstrates the upstream library; this Python adaptation's supported behavior and differences are documented below.
+
 Python renders semantic HTML and maintains stream state. A dependency-free browser module owns tokenization, incremental DOM updates, and animation. A Python server cannot itself animate a browser's DOM.
 
 ## Install
 
 ```sh
-pip install 'git+https://github.com/jcllobet/py-flowtoken.git@v0.3.0'
+pip install py-flowtoken
 ```
 
-This project is published as a GitHub repository; it is not currently published on PyPI.
+The package includes its browser JavaScript and CSS. Node and React are not needed to install or run it.
 
 ## Framework setup
 
@@ -18,17 +22,17 @@ Install the extra for your framework. Each adapter uses the same renderer, strea
 
 | Framework | Adapter | Complete installation guide |
 | --- | --- | --- |
-| FastHTML | `py_flowtoken.adapters.fasthtml` | [FastHTML setup](docs/fasthtml.md) |
-| Flask 3.1 | `py_flowtoken.adapters.flask` | [Flask setup](docs/flask.md) |
-| Django 5.2 LTS | `py_flowtoken.adapters.django` | [Django setup](docs/django.md) |
+| FastHTML | `py_flowtoken.adapters.fasthtml` | [FastHTML setup](https://github.com/jcllobet/py-flowtoken/blob/main/docs/fasthtml.md) |
+| Flask 3.1 | `py_flowtoken.adapters.flask` | [Flask setup](https://github.com/jcllobet/py-flowtoken/blob/main/docs/flask.md) |
+| Django 5.2 LTS | `py_flowtoken.adapters.django` | [Django setup](https://github.com/jcllobet/py-flowtoken/blob/main/docs/django.md) |
 
 ```sh
-python -m pip install 'py-flowtoken[fasthtml] @ git+https://github.com/jcllobet/py-flowtoken.git@v0.3.0'
-python -m pip install 'py-flowtoken[flask] @ git+https://github.com/jcllobet/py-flowtoken.git@v0.3.0'
-python -m pip install 'py-flowtoken[django] @ git+https://github.com/jcllobet/py-flowtoken.git@v0.3.0'
+python -m pip install 'py-flowtoken[fasthtml]'
+python -m pip install 'py-flowtoken[flask]'
+python -m pip install 'py-flowtoken[django]'
 ```
 
-Choose the line for your framework. The guides cover asset routing, template helpers, live streaming, and runnable examples. Django supports both normal `collectstatic` deployment and an optional included asset router. See the [shared streaming contract](docs/streaming.md) for the update format and browser connection.
+Choose the line for your framework. The guides cover asset routing, template helpers, live streaming, and runnable examples. Django supports both normal `collectstatic` deployment and an optional included asset router. See the [shared streaming contract](https://github.com/jcllobet/py-flowtoken/blob/main/docs/streaming.md) for the update format and browser connection.
 
 ## Package layout
 
@@ -174,7 +178,7 @@ Thirteen animation effects match the reference's computed keyframes. `typewriter
 
 This is an independent adaptation of FlowToken by **Ephibbs and contributors**, not an official Python release or an affiliation with its maintainers. The reference implementation for compatibility tests is the published npm package **`flowtoken@1.0.40`**. The original project provides the design, named animation effects, and API inspiration; this repository implements Python rendering, stream state, and a browser runtime independently. Animation definitions adapt the upstream effects.
 
-The npm package declares **ISC** in its package metadata, while the upstream README says **MIT**. No upstream React runtime is bundled in this package. The adapted animation definitions retain upstream attribution in [NOTICE](NOTICE). This repository's own implementation is distributed under the [ISC license](LICENSE). The original npm package is installed only as a development test oracle.
+The npm package declares **ISC** in its package metadata, while the upstream README says **MIT**. No upstream React runtime is bundled in this package. The adapted animation definitions retain upstream attribution in [NOTICE](https://github.com/jcllobet/py-flowtoken/blob/main/NOTICE). This repository's own implementation is distributed under the [ISC license](https://github.com/jcllobet/py-flowtoken/blob/main/LICENSE). The original npm package is installed only as a development test oracle.
 
 ## Verification
 
@@ -191,6 +195,8 @@ The framework suite starts real FastHTML, Flask, and Django servers and checks t
 
 The parity suite renders the actual original npm package with React and compares it with the Python/browser port. It checks public Markdown output and append/rewrite/reset sequences without removing whitespace, custom tags, and computed keyframes. Separate regression checks cover word pacing, DOM identity and selection, visible line breaks, malformed URLs, table alignment, copy feedback, themes, delayed/failed images, initial animation, remounting, Unicode, cancellation, reduced motion, and incremental append work. React and npm are only needed to run these comparison tests.
 
-See [tests/fixtures.json](tests/fixtures.json) for the shared input cases and [tests/browser.mjs](tests/browser.mjs) for the original-versus-port comparisons. This is a tested compatibility surface, not a claim of complete React API or pixel parity.
+See [tests/fixtures.json](https://github.com/jcllobet/py-flowtoken/blob/main/tests/fixtures.json) for the shared input cases and [tests/browser.mjs](https://github.com/jcllobet/py-flowtoken/blob/main/tests/browser.mjs) for the original-versus-port comparisons. This is a tested compatibility surface, not a claim of complete React API or pixel parity.
 
-The [0.3.0 review resolution](docs/reviews/v0.3.0-resolution.md) maps every P1/P2 finding to its fix and verification. To change the browser runtime, edit `browser/`, run `npm run build:runtime`, and commit the generated package asset; CI checks that it matches.
+The [0.3.0 review resolution](https://github.com/jcllobet/py-flowtoken/blob/main/docs/reviews/v0.3.0-resolution.md) maps every P1/P2 finding to its fix and verification. To change the browser runtime, edit `browser/`, run `npm run build:runtime`, and commit the generated package asset; CI checks that it matches.
+
+Maintainers can follow the [PyPI publishing guide](https://github.com/jcllobet/py-flowtoken/blob/main/docs/publishing.md) to release a tagged version using Trusted Publishing.
