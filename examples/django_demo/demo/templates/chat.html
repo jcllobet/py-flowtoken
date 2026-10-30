@@ -1,0 +1,23 @@
+{% load flowtoken %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Django · py-flowtoken</title>
+  {% flowtoken_assets %}
+</head>
+<body>
+  <h1>Django streaming</h1>
+  {% flowtoken_text '' id='answer' interval_ms=40 %}
+  {% flowtoken_asset_url 'flowtoken.js' as flowtoken_js %}
+  <script type="module">
+    import {mount} from '{{ flowtoken_js }}';
+    const view = mount(document.getElementById('answer'));
+    const source = new EventSource('{% url "stream" %}');
+    source.addEventListener('flowtoken', event => view.setText(JSON.parse(event.data).text));
+    source.addEventListener('done', () => source.close());
+    window.addEventListener('pagehide', () => {source.close(); view.destroy();}, {once:true});
+  </script>
+</body>
+</html>

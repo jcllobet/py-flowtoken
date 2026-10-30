@@ -1,25 +1,12 @@
 import asyncio
-from pathlib import Path
 
-from fasthtml.common import FastHTML, H1, Link, Main, P, Script
-from starlette.responses import StreamingResponse
-from starlette.staticfiles import StaticFiles
+from fasthtml.common import FastHTML, H1, Main, P, Script
 
-from py_flowtoken import AnimatedText, TextStream, asset_path
+from py_flowtoken import AnimatedText, TextStream
+from py_flowtoken.adapters.fasthtml import asset_tags, event_stream, mount_assets
 
-app = FastHTML(
-    default_hdrs=False,
-    sess_cls=None,
-    hdrs=(
-        Link(rel="stylesheet", href="/flowtoken/flowtoken.css"),
-        Script(src="/flowtoken/flowtoken.js", type="module"),
-    ),
-)
-app.mount(
-    "/flowtoken",
-    StaticFiles(directory=str(Path(str(asset_path("flowtoken.js"))).parent)),
-    name="flowtoken",
-)
+app = FastHTML(default_hdrs=False, sess_cls=None, hdrs=asset_tags())
+mount_assets(app)
 
 
 @app.get("/")
@@ -51,13 +38,11 @@ async def stream(request):
             "reveals their words smoothly, ",
             "without repeating the text already on screen.",
         ]:
-            yield state.append(chunk).sse()
+            yield state.append(chunk)
             await asyncio.sleep(0.5)
         yield "event: done\ndata: {}\n\n"
 
-    return StreamingResponse(
-        chunks(), media_type="text/event-stream", headers={"Cache-Control": "no-cache"}
-    )
+    return event_stream(chunks())
 
 
 app.router.add_route("/stream", stream)

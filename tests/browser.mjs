@@ -8,7 +8,7 @@ import { once } from 'node:events';
 const fixtures = JSON.parse(await readFile('tests/fixtures.json','utf8'));
 const python = process.env.PYTHON || '.venv/bin/python';
 const rendered = JSON.parse(execFileSync(python,['tests/render_fixtures.py'],{encoding:'utf8',env:{...process.env,PYTHONPATH:'src'}}));
-const paths = {'/flowtoken.js':'src/py_flowtoken/static/flowtoken.js','/flowtoken.css':'src/py_flowtoken/static/flowtoken.css','/oracle.js':'.local/oracle.js'};
+const paths = {'/flowtoken.js':'src/py_flowtoken/static/py_flowtoken/flowtoken.js','/flowtoken.css':'src/py_flowtoken/static/py_flowtoken/flowtoken.css','/oracle.js':'.local/oracle.js'};
 const server = createServer(async(request,response) => {
   if (paths[request.url]) {
     response.setHeader('Content-Type',request.url.endsWith('.css')?'text/css':'text/javascript');

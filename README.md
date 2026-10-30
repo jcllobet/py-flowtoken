@@ -1,16 +1,53 @@
 # py-flowtoken
 
-A Python adaptation of [Ephibbs/flowtoken](https://github.com/Ephibbs/flowtoken) for animated text and Markdown streaming. It works with FastHTML and other server-rendered Python applications, without React or a JavaScript package manager in production.
+A Python adaptation of [Ephibbs/flowtoken](https://github.com/Ephibbs/flowtoken) for animated text and Markdown streaming. It works with FastHTML, Flask, and Django, without React or a JavaScript package manager in production.
 
 Python renders the components and maintains stream state. A small, dependency-free browser module animates the words. A Python server cannot itself animate a browser's DOM.
 
 ## Install
 
 ```sh
-pip install 'git+https://github.com/jcllobet/py-flowtoken.git@v0.1.1'
+pip install 'git+https://github.com/jcllobet/py-flowtoken.git@v0.2.0'
 ```
 
 This project is published as a GitHub repository; it is not currently published on PyPI.
+
+## Framework setup
+
+Install the extra for your framework. Each adapter uses the same renderer, stream state, and browser module; installing one extra does not install the other frameworks.
+
+| Framework | Adapter | Complete installation guide |
+| --- | --- | --- |
+| FastHTML | `py_flowtoken.adapters.fasthtml` | [FastHTML setup](docs/fasthtml.md) |
+| Flask 3.1 | `py_flowtoken.adapters.flask` | [Flask setup](docs/flask.md) |
+| Django 5.2 LTS | `py_flowtoken.adapters.django` | [Django setup](docs/django.md) |
+
+```sh
+python -m pip install 'py-flowtoken[fasthtml] @ git+https://github.com/jcllobet/py-flowtoken.git@v0.2.0'
+python -m pip install 'py-flowtoken[flask] @ git+https://github.com/jcllobet/py-flowtoken.git@v0.2.0'
+python -m pip install 'py-flowtoken[django] @ git+https://github.com/jcllobet/py-flowtoken.git@v0.2.0'
+```
+
+Choose the line for your framework. The guides cover asset routing, template helpers, live streaming, and runnable examples. Django supports both normal `collectstatic` deployment and an optional included asset router. See the [shared streaming contract](docs/streaming.md) for the update format and browser connection.
+
+## Package layout
+
+```text
+py_flowtoken/
+  rendering.py       HTML text, Markdown, and image components
+  streaming.py       Snapshot/delta state and SSE encoding
+  options.py         Animation settings and tokenization options
+  assets.py          Framework-independent packaged asset lookup
+  core.py            Backward-compatible public imports
+  adapters/
+    fasthtml.py      ASGI asset mount and streaming response
+    flask.py         Blueprint, Jinja helpers, and streaming response
+    django/          AppConfig, template tags, URLs, and streaming response
+  static/
+    py_flowtoken/    One shared browser module and stylesheet
+```
+
+The core never imports a web framework. Existing top-level imports and `py_flowtoken.core` imports remain compatible with 0.1.x, including `asset_path()`.
 
 ## Render text and Markdown
 
@@ -26,14 +63,7 @@ print(markdown.render())
 
 Both components implement FastHTML's `__ft__` protocol, so they can be placed directly inside `Div`, `Main`, or another FastHTML component. Plain `.render()` returns HTML for other frameworks.
 
-Serve the two files returned by `asset_path('flowtoken.js')` and `asset_path('flowtoken.css')`. Include them with `assets('/your/static/path')`, or use ordinary stylesheet/script tags. `asset_path` resolves the installed package's files; there is no CDN dependency.
-
-A complete FastHTML/SSE example is in [examples/fasthtml_chat.py](examples/fasthtml_chat.py):
-
-```sh
-pip install '.[fasthtml]'
-uvicorn examples.fasthtml_chat:app --port 8090
-```
+The [framework guides](#framework-setup) register and serve the packaged CSS/JavaScript automatically. For a different Python framework, the existing `asset_path()` and `assets()` functions remain available; they do not require any adapter or CDN.
 
 ## Stream updates
 
@@ -84,7 +114,7 @@ For server-rendered Markdown updates, `FlowMarkdown.setRenderedHTML()` accepts t
 | Progressive snapshots and chunk appends | Supported |
 | Partial-word corrections, resets, duplicate snapshots | Supported |
 | Reduced motion and cancellation | Supported |
-| FastHTML components | `__ft__` integration; optional FastHTML dependency |
+| Framework adapters | FastHTML components, Flask/Jinja helpers, Django template tags and static files |
 | Arbitrary React custom components | Not portable; not supported |
 | React syntax-highlighter themes | Not supported; code remains escaped and readable |
 | Raw HTML from Markdown | Escaped for safety; differs from upstream's `rehype-raw` behavior |
@@ -102,7 +132,7 @@ The npm package declares **ISC** in its package metadata, while the upstream REA
 ## Verification
 
 ```sh
-pip install '.[dev]'
+pip install '.[dev,fasthtml,flask,django]'
 pytest -q
 npm ci --ignore-scripts
 npx playwright install chromium
@@ -110,6 +140,8 @@ npm test
 python -m build --no-isolation
 ```
 
-The browser suite renders the actual original npm package with React and compares it with the Python/browser port. It checks token splitting, the animation-name map, Markdown semantics, and cumulative updates. Additional checks cover paced word arrival, retained DOM nodes, corrections, Unicode, cancellation, reduced motion, and HTML safety. React and npm are only needed to run these comparison tests.
+The framework suite starts real FastHTML, Flask, and Django servers and checks their templates, assets, SSE responses, and word-by-word rendering in Chrome. Python tests additionally verify Django `collectstatic`, safe template output, application prefixes, and synchronous/asynchronous stream handling.
+
+The parity suite renders the actual original npm package with React and compares it with the Python/browser port. It checks token splitting, the animation-name map, Markdown semantics, and cumulative updates. Additional checks cover paced word arrival, retained DOM nodes, corrections, Unicode, cancellation, reduced motion, and HTML safety. React and npm are only needed to run these comparison tests.
 
 See [tests/fixtures.json](tests/fixtures.json) for the shared input cases and [tests/browser.mjs](tests/browser.mjs) for the original-versus-port comparisons. This is a tested compatibility surface, not a claim of complete React API or pixel parity.

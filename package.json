@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "build:oracle": "esbuild tests/oracle.js --bundle --format=esm --platform=browser --minify --outfile=.local/oracle.js",
-    "test": "npm run build:oracle && node tests/browser.mjs"
+    "test": "npm run test:parity && npm run test:frameworks",
+    "test:parity": "npm run build:oracle && node tests/browser.mjs",
+    "test:frameworks": "node tests/frameworks.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.56.1",

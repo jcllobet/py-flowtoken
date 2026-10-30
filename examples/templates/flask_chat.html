@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flask · py-flowtoken</title>
+  {{ flowtoken_assets() }}
+</head>
+<body>
+  <h1>Flask streaming</h1>
+  {{ flowtoken_text('', id='answer', interval_ms=40) }}
+  <script type="module">
+    import {mount} from '{{ flowtoken_asset_url("flowtoken.js") }}';
+    const view = mount(document.getElementById('answer'));
+    const source = new EventSource('{{ url_for("stream") }}');
+    source.addEventListener('flowtoken', event => view.setText(JSON.parse(event.data).text));
+    source.addEventListener('done', () => source.close());
+    window.addEventListener('pagehide', () => {source.close(); view.destroy();}, {once:true});
+  </script>
+</body>
+</html>
